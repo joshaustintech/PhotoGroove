@@ -5242,52 +5242,44 @@ var $elm$html$Html$Events$onClick = function (msg) {
 var $author$project$PhotoGroove$viewThumbnail = F2(
 	function (selectedThumb, thumb) {
 		return _Utils_eq(selectedThumb.url, thumb.url) ? A2(
-			$elm$html$Html$div,
-			_List_Nil,
+			$elm$html$Html$img,
 			_List_fromArray(
 				[
-					A2(
-					$elm$html$Html$img,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$class('border border-primary img-thumbnail float-left'),
-							A2($elm$html$Html$Attributes$style, 'max-height', '200px'),
-							A2($elm$html$Html$Attributes$style, 'width', 'auto'),
-							$elm$html$Html$Attributes$src(thumb.url),
-							$elm$html$Html$Attributes$alt('Selected Photo')
-						]),
-					_List_Nil)
-				])) : A2(
-			$elm$html$Html$div,
-			_List_Nil,
+					$elm$html$Html$Attributes$class('border border-primary img-thumbnail col-sm-1 m-1 mt-3'),
+					A2($elm$html$Html$Attributes$style, 'max-height', '100px'),
+					A2($elm$html$Html$Attributes$style, 'width', 'auto'),
+					$elm$html$Html$Attributes$src(thumb.url),
+					$elm$html$Html$Attributes$alt('Selected Photo')
+				]),
+			_List_Nil) : A2(
+			$elm$html$Html$img,
 			_List_fromArray(
 				[
-					A2(
-					$elm$html$Html$img,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$class('img-thumbnail float-left'),
-							A2($elm$html$Html$Attributes$style, 'max-height', '200px'),
-							$elm$html$Html$Attributes$src(thumb.url),
-							$elm$html$Html$Attributes$alt('Photo Thumbnail'),
-							$elm$html$Html$Events$onClick(
-							$author$project$PhotoGroove$ClickedPhoto(thumb))
-						]),
-					_List_Nil)
-				]));
+					$elm$html$Html$Attributes$class('img-thumbnail col-sm-1 m-1 mt-3'),
+					A2($elm$html$Html$Attributes$style, 'max-height', '100px'),
+					A2($elm$html$Html$Attributes$style, 'width', 'auto'),
+					$elm$html$Html$Attributes$src(thumb.url),
+					$elm$html$Html$Attributes$alt('Photo Thumbnail'),
+					$elm$html$Html$Events$onClick(
+					$author$project$PhotoGroove$ClickedPhoto(thumb))
+				]),
+			_List_Nil);
 	});
 var $author$project$PhotoGroove$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('container')
+				$elm$html$Html$Attributes$class('container-md mt-4')
 			]),
 		_List_fromArray(
 			[
 				A2(
 				$elm$html$Html$h1,
-				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('display-1')
+					]),
 				_List_fromArray(
 					[
 						$elm$html$Html$text('Photo Groove')
@@ -5315,7 +5307,7 @@ var $author$project$PhotoGroove$view = function (model) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('row')
+						$elm$html$Html$Attributes$class('row gx-3')
 					]),
 				A2(
 					$elm$core$List$map,

@@ -34,8 +34,8 @@ update msg model =
 
 view: Model -> Html Msg
 view model =
-    div [ class "container-md" ]
-    [ h1 [] [ text "Photo Groove" ]
+    div [ class "container-md mt-4" ]
+    [ h1 [ class "display-1" ] [ text "Photo Groove" ]
     , div [ class "row" ] [
         img
         [ class "img-thumbnail"
@@ -45,29 +45,25 @@ view model =
         ]
         []
     ]
-    , div [ class "row" ]
+    , div [ class "row gx-3" ]
         (List.map (viewThumbnail model.selectedPhoto) model.photos)
     ]
 viewThumbnail : Photo -> Photo -> Html Msg
 viewThumbnail selectedThumb thumb =
     if selectedThumb.url == thumb.url then
-        div []
-            [ img [ class "border border-primary img-thumbnail float-left"
-                  , style "max-height" "200px"
-                  , style "width" "auto"
-                  , src thumb.url, alt "Selected Photo"
-                  ] []
-            ]
+        img [ class "border border-primary img-thumbnail col-sm-1 m-1 mt-3"
+            , style "max-height" "100px"
+            , style "width" "auto"
+            , src thumb.url, alt "Selected Photo"
+            ] []
     else
-        div []
-            [ img
-                [ class "img-thumbnail float-left"
-                , style "max-height" "200px"
-                , src thumb.url
-                , alt "Photo Thumbnail"
-                , onClick (ClickedPhoto thumb)
-                ] []
-            ]
+        img [ class "img-thumbnail col-sm-1 m-1 mt-3"
+            , style "max-height" "100px"
+            , style "width" "auto"
+            , src thumb.url
+            , alt "Photo Thumbnail"
+            , onClick (ClickedPhoto thumb)
+            ] []
 
 
 main : Program () Model Msg
