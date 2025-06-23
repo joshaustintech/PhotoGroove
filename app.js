@@ -4450,6 +4450,8 @@ var $elm$core$Set$toList = function (_v0) {
 var $elm$core$Basics$EQ = {$: 'EQ'};
 var $elm$core$Basics$GT = {$: 'GT'};
 var $elm$core$Basics$LT = {$: 'LT'};
+var $author$project$PhotoGroove$Medium = {$: 'Medium'};
+var $elm$core$Maybe$Nothing = {$: 'Nothing'};
 var $author$project$PhotoGroove$initialModel = {
 	photos: _List_fromArray(
 		[
@@ -4457,7 +4459,8 @@ var $author$project$PhotoGroove$initialModel = {
 			{url: 'https://picsum.photos/id/23/3887/4899'},
 			{url: 'https://picsum.photos/id/36/4179/2790'}
 		]),
-	selectedPhoto: {url: 'https://picsum.photos/id/11/2500/1667'}
+	selectedPhoto: $elm$core$Maybe$Nothing,
+	thumbnailSize: $author$project$PhotoGroove$Medium
 };
 var $elm$core$Result$Err = function (a) {
 	return {$: 'Err', a: a};
@@ -4485,7 +4488,6 @@ var $elm$core$Basics$add = _Basics_add;
 var $elm$core$Maybe$Just = function (a) {
 	return {$: 'Just', a: a};
 };
-var $elm$core$Maybe$Nothing = {$: 'Nothing'};
 var $elm$core$String$all = _String_all;
 var $elm$core$Basics$and = _Basics_and;
 var $elm$core$Basics$append = _Utils_append;
@@ -5191,11 +5193,22 @@ var $elm$browser$Browser$sandbox = function (impl) {
 };
 var $author$project$PhotoGroove$update = F2(
 	function (msg, model) {
-		var photo = msg.a;
-		return _Utils_update(
-			model,
-			{selectedPhoto: photo});
+		if (msg.$ === 'ClickedPhoto') {
+			var photo = msg.a;
+			return _Utils_update(
+				model,
+				{
+					selectedPhoto: $elm$core$Maybe$Just(photo)
+				});
+		} else {
+			var size = msg.a;
+			return _Utils_update(
+				model,
+				{thumbnailSize: size});
+		}
 	});
+var $author$project$PhotoGroove$Large = {$: 'Large'};
+var $author$project$PhotoGroove$Small = {$: 'Small'};
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
@@ -5207,6 +5220,8 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$html$Html$img = _VirtualDom_node('img');
 var $elm$html$Html$Attributes$src = function (url) {
 	return A2(
@@ -5216,12 +5231,41 @@ var $elm$html$Html$Attributes$src = function (url) {
 };
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $author$project$PhotoGroove$ClickedPhoto = function (a) {
-	return {$: 'ClickedPhoto', a: a};
+var $author$project$PhotoGroove$viewSelectedPhoto = function (model) {
+	var _v0 = model.selectedPhoto;
+	if (_v0.$ === 'Just') {
+		var p = _v0.a;
+		return A2(
+			$elm$html$Html$img,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('img-thumbnail'),
+					A2($elm$html$Html$Attributes$style, 'max-height', '600px'),
+					A2($elm$html$Html$Attributes$style, 'width', 'auto'),
+					$elm$html$Html$Attributes$src(p.url)
+				]),
+			_List_Nil);
+	} else {
+		return $elm$html$Html$text('');
+	}
 };
-var $elm$html$Html$Attributes$alt = $elm$html$Html$Attributes$stringProperty('alt');
+var $author$project$PhotoGroove$ClickedSize = function (a) {
+	return {$: 'ClickedSize', a: a};
+};
+var $elm$json$Json$Encode$bool = _Json_wrap;
+var $elm$html$Html$Attributes$boolProperty = F2(
+	function (key, bool) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$bool(bool));
+	});
+var $elm$html$Html$Attributes$checked = $elm$html$Html$Attributes$boolProperty('checked');
+var $elm$html$Html$Attributes$for = $elm$html$Html$Attributes$stringProperty('htmlFor');
+var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
+var $elm$html$Html$input = _VirtualDom_node('input');
+var $elm$html$Html$label = _VirtualDom_node('label');
+var $elm$html$Html$Attributes$name = $elm$html$Html$Attributes$stringProperty('name');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
 };
@@ -5239,24 +5283,88 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
-var $author$project$PhotoGroove$viewThumbnail = F2(
-	function (selectedThumb, thumb) {
-		return _Utils_eq(selectedThumb.url, thumb.url) ? A2(
-			$elm$html$Html$img,
+var $author$project$PhotoGroove$sizeToString = function (size) {
+	switch (size.$) {
+		case 'Small':
+			return 'small';
+		case 'Medium':
+			return 'medium';
+		default:
+			return 'large';
+	}
+};
+var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
+var $author$project$PhotoGroove$viewSizeChooser = F2(
+	function (model, size) {
+		var sizeText = $author$project$PhotoGroove$sizeToString(size);
+		return A2(
+			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('border border-primary img-thumbnail col-sm-1 m-1 mt-3'),
-					A2($elm$html$Html$Attributes$style, 'max-height', '100px'),
-					A2($elm$html$Html$Attributes$style, 'width', 'auto'),
-					$elm$html$Html$Attributes$src(thumb.url),
-					$elm$html$Html$Attributes$alt('Selected Photo')
+					$elm$html$Html$Attributes$class('form-check')
 				]),
-			_List_Nil) : A2(
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$input,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$type_('radio'),
+							$elm$html$Html$Attributes$id('radio-size-' + sizeText),
+							$elm$html$Html$Attributes$class('form-check-input'),
+							$elm$html$Html$Attributes$name('size'),
+							$elm$html$Html$Attributes$checked(
+							_Utils_eq(model.thumbnailSize, size)),
+							$elm$html$Html$Events$onClick(
+							$author$project$PhotoGroove$ClickedSize(size))
+						]),
+					_List_Nil),
+					A2(
+					$elm$html$Html$label,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('form-check-label'),
+							$elm$html$Html$Attributes$for('radio-size-' + sizeText)
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text(sizeText)
+						]))
+				]));
+	});
+var $author$project$PhotoGroove$ClickedPhoto = function (a) {
+	return {$: 'ClickedPhoto', a: a};
+};
+var $elm$html$Html$Attributes$alt = $elm$html$Html$Attributes$stringProperty('alt');
+var $author$project$PhotoGroove$renderBaseThumb = F3(
+	function (thumb, size, isSelected) {
+		var styles = 'img-thumbnail m-1 mt-3 ' + function () {
+			switch (size.$) {
+				case 'Small':
+					return 'col-sm-1';
+				case 'Medium':
+					return 'col-sm-2';
+				default:
+					return 'col-sm-4';
+			}
+		}();
+		var maxHeight = function () {
+			switch (size.$) {
+				case 'Small':
+					return '100px';
+				case 'Medium':
+					return '150px';
+				default:
+					return '200px';
+			}
+		}();
+		return A2(
 			$elm$html$Html$img,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('img-thumbnail col-sm-1 m-1 mt-3'),
-					A2($elm$html$Html$Attributes$style, 'max-height', '100px'),
+					$elm$html$Html$Attributes$class(
+					isSelected ? ('border border-primary ' + styles) : styles),
+					A2($elm$html$Html$Attributes$style, 'max-height', maxHeight),
 					A2($elm$html$Html$Attributes$style, 'width', 'auto'),
 					$elm$html$Html$Attributes$src(thumb.url),
 					$elm$html$Html$Attributes$alt('Photo Thumbnail'),
@@ -5264,6 +5372,23 @@ var $author$project$PhotoGroove$viewThumbnail = F2(
 					$author$project$PhotoGroove$ClickedPhoto(thumb))
 				]),
 			_List_Nil);
+	});
+var $author$project$PhotoGroove$viewSelectedThumb = F2(
+	function (thumb, size) {
+		return A3($author$project$PhotoGroove$renderBaseThumb, thumb, size, true);
+	});
+var $author$project$PhotoGroove$viewUnselectedThumb = F2(
+	function (thumb, size) {
+		return A3($author$project$PhotoGroove$renderBaseThumb, thumb, size, false);
+	});
+var $author$project$PhotoGroove$viewThumbnail = F3(
+	function (selectedThumb, size, thumb) {
+		if (selectedThumb.$ === 'Just') {
+			var t = selectedThumb.a;
+			return _Utils_eq(t.url, thumb.url) ? A2($author$project$PhotoGroove$viewSelectedThumb, thumb, size) : A2($author$project$PhotoGroove$viewUnselectedThumb, thumb, size);
+		} else {
+			return A2($author$project$PhotoGroove$viewUnselectedThumb, thumb, size);
+		}
 	});
 var $author$project$PhotoGroove$view = function (model) {
 	return A2(
@@ -5290,18 +5415,20 @@ var $author$project$PhotoGroove$view = function (model) {
 					[
 						$elm$html$Html$Attributes$class('row')
 					]),
+				A2(
+					$elm$core$List$map,
+					$author$project$PhotoGroove$viewSizeChooser(model),
+					_List_fromArray(
+						[$author$project$PhotoGroove$Small, $author$project$PhotoGroove$Medium, $author$project$PhotoGroove$Large]))),
+				A2(
+				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						A2(
-						$elm$html$Html$img,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('img-thumbnail'),
-								A2($elm$html$Html$Attributes$style, 'max-height', '600px'),
-								A2($elm$html$Html$Attributes$style, 'width', 'auto'),
-								$elm$html$Html$Attributes$src(model.selectedPhoto.url)
-							]),
-						_List_Nil)
+						$elm$html$Html$Attributes$class('row')
+					]),
+				_List_fromArray(
+					[
+						$author$project$PhotoGroove$viewSelectedPhoto(model)
 					])),
 				A2(
 				$elm$html$Html$div,
@@ -5311,7 +5438,7 @@ var $author$project$PhotoGroove$view = function (model) {
 					]),
 				A2(
 					$elm$core$List$map,
-					$author$project$PhotoGroove$viewThumbnail(model.selectedPhoto),
+					A2($author$project$PhotoGroove$viewThumbnail, model.selectedPhoto, model.thumbnailSize),
 					model.photos))
 			]));
 };
