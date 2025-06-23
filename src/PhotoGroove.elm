@@ -1,9 +1,11 @@
 module PhotoGroove exposing (main)
 
+import Array
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Browser
+import Random
 
 type ThumbnailSize = Small
                    | Medium
@@ -20,6 +22,8 @@ type alias Photo =
 
 type Msg = ClickedPhoto Photo
          | ClickedSize ThumbnailSize
+         | ClickedSurpriseMe
+         | GotSelectedIndex Int
 
 initialModel: Model
 initialModel =
@@ -33,18 +37,46 @@ initialModel =
     , thumbnailSize = Medium
     }
 
-update: Msg -> Model -> Model
+update: Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        ClickedPhoto photo -> { model | selectedPhoto = Just photo }
-        ClickedSize size -> { model | thumbnailSize = size }
+        ClickedPhoto photo ->
+            ( { model | selectedPhoto = Just photo }, Cmd.none)
+
+        ClickedSize size ->
+            ( { model | thumbnailSize = size }, Cmd.none)
+
+        ClickedSurpriseMe ->
+            (model, Random.generate GotSelectedIndex (randomPhotoPicker model))
+
+        GotSelectedIndex index ->
+            ( { model | selectedPhoto = getPhoto index model }, Cmd.none)
+
+getPhoto : Int -> Model -> Maybe Photo
+getPhoto index model =
+    Array.get index (photoArray model)
+
+photoArray : Model -> Array.Array Photo
+photoArray model =
+    Array.fromList model.photos
+
+randomPhotoPicker : Model -> Random.Generator Int
+randomPhotoPicker model =
+    Random.int 0 (Array.length (photoArray model) - 1)
 
 view: Model -> Html Msg
 view model =
     div [ class "container-md mt-4" ]
     [ h1 [ class "display-1" ] [ text "Photo Groove" ]
     , div [ class "row" ]
-        (List.map (viewSizeChooser model) [Small, Medium, Large])
+        [ div [ class "col-sm-2" ]
+            (List.map (viewSizeChooser model) [Small, Medium, Large])
+        , div [ class "col-sm-2" ] [
+            button [ class "btn btn-success"
+               , onClick ClickedSurpriseMe
+               ] [ text "Surprise Me" ]
+        ]
+    ]
     , div [ class "row" ] [
         viewSelectedPhoto model
     ]
@@ -130,8 +162,9 @@ renderBaseThumb thumb size isSelected =
 
 main : Program () Model Msg
 main =
-    Browser.sandbox
-        { init = initialModel
+    Browser.element
+        { init = \_ -> (initialModel, Cmd.none)
         , view = view
         , update = update
+        , subscriptions = \_ -> Sub.none
         }
